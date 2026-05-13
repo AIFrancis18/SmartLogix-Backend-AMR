@@ -33,19 +33,19 @@ public class EnvioServiceImpl implements EnvioService {
         return repository.findByPedidoId(pedidoId);
     }
 
-    // 🔥 ACTUALIZAR ESTADO
+
     @Override
     public Envio actualizarEstado(Long id, String estado) {
 
         Envio envio = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Envío no encontrado"));
 
-        // 🔥 VALIDACIÓN SIMPLE
+       
         if (estado == null || estado.isEmpty()) {
             throw new RuntimeException("Estado inválido");
         }
 
-        // 🔥 ESTADOS VÁLIDOS
+        
         if (!estado.equals("PENDIENTE") &&
             !estado.equals("EN_CAMINO") &&
             !estado.equals("ENTREGADO")) {
@@ -58,7 +58,7 @@ public class EnvioServiceImpl implements EnvioService {
         return repository.save(envio);
     }
 
-    // 🔥 ELIMINAR ENVÍOS POR PEDIDO
+    
     @Override
     public void eliminarPorPedido(Long pedidoId) {
 
