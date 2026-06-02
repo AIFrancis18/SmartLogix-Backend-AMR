@@ -1,6 +1,7 @@
 package com.smartlogix.serviciopedido.service;
 
 import com.smartlogix.serviciopedido.client.EnvioClient;
+import com.smartlogix.serviciopedido.client.InventarioClient;
 import com.smartlogix.serviciopedido.model.Pedido;
 import com.smartlogix.serviciopedido.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,14 @@ public class PedidoServiceImpl implements PedidoService {
 
     private final PedidoRepository repository;
     private final EnvioClient envioClient;
+    private final InventarioClient inventarioClient;
 
     public PedidoServiceImpl(PedidoRepository repository,
-                             EnvioClient envioClient) {
+                             EnvioClient envioClient,
+                             InventarioClient inventarioClient) {
         this.repository = repository;
         this.envioClient = envioClient;
+        this.inventarioClient = inventarioClient;
     }
 
     @Override
@@ -39,6 +43,27 @@ public class PedidoServiceImpl implements PedidoService {
         if (pedido.getCliente() == null || pedido.getCliente().isEmpty()) {
             throw new RuntimeException("El cliente es obligatorio");
         }
+
+        // 🔥 VALIDAR STOCK EN INVENTARIO
+        boolean hayStock = inventarioClient.hayStock(
+                pedido.getProducto(),
+                pedido.getCantidad()
+        );
+
+        if (!hayStock) {
+            throw new RuntimeException(
+                    "Stock insuficiente para el producto: "
+                            + pedido.getProducto()
+            );
+        }
+
+        // 🔥 DESCONTAR STOCK
+        inventarioClient.descontarStock(
+                pedido.getProducto(),
+                pedido.getCantidad()
+        );
+
+        System.out.println("✅ Stock descontado correctamente");
 
         // 🔥 ESTADO INICIAL
         pedido.setEstado("PENDIENTE");
@@ -110,7 +135,6 @@ public class PedidoServiceImpl implements PedidoService {
         Pedido pedido = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
-        // 🔥 ELIMINA LOS ENVÍOS RELACIONADOS
         try {
 
             envioClient.eliminarEnviosPorPedido(id);
@@ -123,7 +147,6 @@ public class PedidoServiceImpl implements PedidoService {
             System.out.println(e.getMessage());
         }
 
-        // 🔥 ELIMINA EL PEDIDO
         repository.delete(pedido);
 
         System.out.println("✅ Pedido eliminado");

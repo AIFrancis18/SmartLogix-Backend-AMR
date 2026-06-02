@@ -49,7 +49,8 @@
             "mainClass": "com.smartlogix.apigateway.ApigatewayApplication",
             "projectName": "com.smartlogix-apigateway",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -59,7 +60,8 @@
             "mainClass": "com.smartlogix.servicioenvio.ServicioenvioApplication",
             "projectName": "com.smartlogix-servicioenvio",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
         },
         {
             "type": "java",
@@ -78,6 +80,16 @@
             "cwd": "${workspaceFolder}",
             "mainClass": "com.smartlogix.serviciousuario.ServiciousuarioApplication",
             "projectName": "com.smartlogix-serviciousuario",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ServicioinventarioApplication<com.smartlogix-servicioinventario>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.smartlogix.servicioinventario.ServicioinventarioApplication",
+            "projectName": "com.smartlogix-servicioinventario",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

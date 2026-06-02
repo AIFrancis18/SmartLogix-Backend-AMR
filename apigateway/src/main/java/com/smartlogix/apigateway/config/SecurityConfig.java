@@ -19,29 +19,43 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
 
-                // 🔓 PUBLICO
+                // =========================
+                // 🔓 PÚBLICO
+                // =========================
+
                 .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
                 .requestMatchers("/usuarios/login").permitAll()
 
-                // 👑 ADMIN → gestiona usuarios
-                .requestMatchers("/usuarios/**").hasRole("ADMIN")
+                // =========================
+                // 👑 USUARIOS
+                // =========================
+
+                .requestMatchers("/usuarios/**")
+                        .hasRole("ADMIN")
 
                 // =========================
                 // 📦 PEDIDOS
                 // =========================
 
-                // 🔹 CREAR pedido → SOLO OPERADOR
-                .requestMatchers(HttpMethod.POST, "/pedidos").hasRole("OPERADOR")
+                // Crear pedido
+                .requestMatchers(HttpMethod.POST, "/pedidos")
+                        .hasRole("OPERADOR")
 
-                // 🔹 VER pedidos → TODOS LOS ROLES INTERNOS
+                // Ver pedidos
                 .requestMatchers(HttpMethod.GET, "/pedidos/**")
-                        .hasAnyRole("ADMIN", "OPERADOR", "LOGISTICA")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "OPERADOR",
+                                "LOGISTICA",
+                                "BODEGA"
+                        )
 
-                // 🔹 ACTUALIZAR estado → SOLO LOGISTICA
+                // Cambiar estado pedido
                 .requestMatchers(HttpMethod.PUT, "/pedidos/**")
                         .hasRole("LOGISTICA")
 
@@ -49,18 +63,52 @@ public class SecurityConfig {
                 // 🚚 ENVÍOS
                 // =========================
 
-                // 🔹 VER envíos → LOGISTICA + ADMIN
+                // Ver envíos
                 .requestMatchers(HttpMethod.GET, "/envios/**")
-                        .hasAnyRole("ADMIN", "LOGISTICA")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "LOGISTICA"
+                        )
 
-                // 🔹 CREAR envío → SOLO LOGISTICA
+                // Crear envío
                 .requestMatchers(HttpMethod.POST, "/envios")
                         .hasRole("LOGISTICA")
 
-                // 🔒 TODO LO DEMÁS
+                // =========================
+                // 🏪 INVENTARIO
+                // =========================
+
+                // Crear producto
+                .requestMatchers(HttpMethod.POST, "/productos")
+                        .hasRole("BODEGA")
+
+                // Ver productos
+                .requestMatchers(HttpMethod.GET, "/productos/**")
+                        .hasAnyRole(
+                                "ADMIN",
+                                "BODEGA",
+                                "OPERADOR",
+                                "LOGISTICA"
+                        )
+
+                // Modificar producto
+                .requestMatchers(HttpMethod.PUT, "/productos/**")
+                        .hasRole("BODEGA")
+
+                // Eliminar producto
+                .requestMatchers(HttpMethod.DELETE, "/productos/**")
+                        .hasRole("BODEGA")
+
+                // =========================
+                // 🔒 RESTO
+                // =========================
+
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(
+                    jwtFilter,
+                    UsernamePasswordAuthenticationFilter.class
+            );
 
         return http.build();
     }
