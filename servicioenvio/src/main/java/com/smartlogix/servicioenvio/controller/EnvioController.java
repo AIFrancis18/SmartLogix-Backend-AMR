@@ -16,25 +16,22 @@ public class EnvioController {
         this.service = service;
     }
 
-    // 🔥 Crear envío
+
     @PostMapping
     public Envio crear(@RequestBody Envio envio){
         return service.crear(envio);
     }
 
-    // 🔹 Listar envíos
     @GetMapping
     public List<Envio> listar(){
         return service.listar();
     }
 
-    // 🔹 Buscar envíos por pedido
     @GetMapping("/pedido/{pedidoId}")
     public List<Envio> porPedido(@PathVariable Long pedidoId){
         return service.buscarPorPedido(pedidoId);
     }
 
-    // 🔥 ACTUALIZAR ESTADO DEL ENVÍO
     @PutMapping("/{id}/estado")
     public Envio actualizarEstado(@PathVariable Long id,
                                   @RequestParam String estado){
@@ -42,7 +39,6 @@ public class EnvioController {
         return service.actualizarEstado(id, estado);
     }
 
-    // 🔥 ELIMINAR ENVÍOS POR PEDIDO
     @DeleteMapping("/pedido/{pedidoId}")
     public void eliminarPorPedido(@PathVariable Long pedidoId){
         service.eliminarPorPedido(pedidoId);

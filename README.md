@@ -1,5 +1,3 @@
-# SmartLogix-AMR
-Evaluciones FullStack III
 # SmartLogix — Backend Microservicios
 
 Sistema de gestión logística construido con arquitectura de microservicios en **Spring Boot 3** y **Java 21**. Permite registrar usuarios, gestionar pedidos y hacer seguimiento de envíos, todo protegido con autenticación JWT centralizada en un API Gateway.
@@ -300,3 +298,4 @@ SmartLogix/
 ```
 POST /pedidos  →  crea Pedido  →  EnvioClient.crearEnvio()  →  POST /envios
 DELETE /pedidos/{id}  →  EnvioClient.eliminarEnviosPorPedido()  →  DELETE /envios/pedido/{id}
+```
