@@ -24,13 +24,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.jwtUtil = jwtUtil;
     }
 
-    // 🔥 REGEX NOMBRE (SOLO LETRAS Y ESPACIOS)
-    private final Pattern nombreRegex =
-            Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$");
+        // 🔥 REGEX NOMBRE (SOLO LETRAS Y ESPACIOS)
+        private final Pattern nombreRegex =
+                Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$");
 
-    // 🔥 REGEX CORREO (.COM Y .CL)
-    private final Pattern correoRegex =
-            Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.(com|cl)$");
+        // 🔥 REGEX CORREO (DOMINIOS PERMITIDOS)
+        private final Pattern correoRegex =
+                        Pattern.compile(
+                        "^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|duoc\\.cl|duocuc\\.cl)$"
+                );
 
     @Override
     public Usuario guardar(Usuario usuario) {
@@ -65,8 +67,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 !correoRegex.matcher(usuario.getCorreo()).matches()) {
 
             throw new RuntimeException(
-                    "Correo inválido. Debe terminar en .com o .cl"
-            );
+                "Correo inválido. Solo se permiten gmail.com, hotmail.com, duoc.cl y duocuc.cl"
+        );
         }
 
         // 🔥 VALIDAR ROL

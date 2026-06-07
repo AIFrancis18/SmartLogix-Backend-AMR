@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 // 🔥 conexión al microservicio de envíos
-@FeignClient(name = "servicioenvio", url = "http://localhost:8083")
+@FeignClient(name = "servicioenvio", url = "http://servicioenvio:8083")
 public interface EnvioClient {
 
     // 🔹 obtener envíos por pedidos
