@@ -3,7 +3,7 @@ package com.smartlogix.serviciopedido.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "servicioinventario", url = "http://localhost:8084")
+@FeignClient(name = "servicioinventario", url = "http://servicioinventario:8084")
 public interface InventarioClient {
 
     // 🔥 validar stock

@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+
+  apigateway:
+    build: ./apigateway
+    ports:
+      - "9090:9090"
+    depends_on:
+      - serviciousuario
+      - serviciopedido
+      - servicioenvio
+      - servicioinventario
+      - servicionotificacion
+    networks:
+      - spring-net
+
+  serviciousuario:
+    build: ./serviciousuario
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-usuarios:3306/usuarios_db
+      - SPRING_DATASOURCE_USERNAME=root
+    depends_on:
+      - db-usuarios
+    networks:
+      - spring-net
+
+  serviciopedido:
+    build: ./serviciopedido
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-pedidos:3306/pedidos_db
+      - SPRING_DATASOURCE_USERNAME=root
+    depends_on:
+      - db-pedidos
+    networks:
+      - spring-net
+
+  servicioenvio:
+    build: ./servicioenvio
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-envios:3306/envios_db
+      - SPRING_DATASOURCE_USERNAME=root
+    depends_on:
+      - db-envios
+    networks:
+      - spring-net
+
+  servicioinventario:
+    build: ./servicioinventario
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-inventario:3306/inventario_db
+      - SPRING_DATASOURCE_USERNAME=root
+    depends_on:
+      - db-inventario
+    networks:
+      - spring-net
+
+  servicionotificacion:
+    build: ./servicionotificacion
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-notificaciones:3306/notificaciones_db
+      - SPRING_DATASOURCE_USERNAME=root
+    depends_on:
+      - db-notificaciones
+    networks:
+      - spring-net
+
+  db-usuarios:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: usuarios_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3307:3306"
+    volumes:
+      - usuarios-data:/var/lib/mysql
+    networks:
+      - spring-net
+
+  db-pedidos:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: pedidos_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3308:3306"
+    volumes:
+      - pedidos-data:/var/lib/mysql
+    networks:
+      - spring-net
+
+  db-envios:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: envios_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3309:3306"
+    volumes:
+      - envios-data:/var/lib/mysql
+    networks:
+      - spring-net
+
+  db-inventario:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: inventario_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3310:3306"
+    volumes:
+      - inventario-data:/var/lib/mysql
+    networks:
+      - spring-net
+
+  db-notificaciones:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: notificaciones_db
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    ports:
+      - "3311:3306"
+    volumes:
+      - notificaciones-data:/var/lib/mysql
+    networks:
+      - spring-net
+
+networks:
+  spring-net:
+
+volumes:
+  usuarios-data:
+  pedidos-data:
+  envios-data:
+  inventario-data:
+  notificaciones-data:
