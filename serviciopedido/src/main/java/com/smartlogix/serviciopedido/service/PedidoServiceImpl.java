@@ -1,5 +1,7 @@
 package com.smartlogix.serviciopedido.service;
 
+import com.smartlogix.serviciopedido.dto.NotificacionDTO;
+import com.smartlogix.serviciopedido.producer.NotificacionProducer;
 import com.smartlogix.serviciopedido.client.EnvioClient;
 import com.smartlogix.serviciopedido.client.InventarioClient;
 import com.smartlogix.serviciopedido.model.Pedido;
@@ -15,13 +17,17 @@ public class PedidoServiceImpl implements PedidoService {
     private final PedidoRepository repository;
     private final EnvioClient envioClient;
     private final InventarioClient inventarioClient;
+    private final NotificacionProducer notificacionProducer;
 
     public PedidoServiceImpl(PedidoRepository repository,
-                             EnvioClient envioClient,
-                             InventarioClient inventarioClient) {
+                            EnvioClient envioClient,
+                            InventarioClient inventarioClient,
+                            NotificacionProducer notificacionProducer) {
+
         this.repository = repository;
         this.envioClient = envioClient;
         this.inventarioClient = inventarioClient;
+        this.notificacionProducer = notificacionProducer;
     }
 
     @Override
@@ -70,6 +76,16 @@ public class PedidoServiceImpl implements PedidoService {
 
         // 🔥 GUARDAR PEDIDO
         Pedido pedidoGuardado = repository.save(pedido);
+
+        NotificacionDTO notificacion =
+                new NotificacionDTO(
+                        pedidoGuardado.getCliente(),
+                        "Pedido creado correctamente. ID: "
+                                + pedidoGuardado.getId(),
+                        pedidoGuardado.getId()
+                );
+
+        notificacionProducer.enviar(notificacion);
 
         // 🔥 CREAR ENVÍO AUTOMÁTICO
         Map<String, Object> envio = Map.of(

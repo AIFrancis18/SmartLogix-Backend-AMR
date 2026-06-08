@@ -3,6 +3,7 @@ package com.smartlogix.servicionotificacion.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+
 @Entity
 public class Notificacion {
 

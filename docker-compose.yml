@@ -36,6 +36,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
     depends_on:
       - db-pedidos
+      - rabbitmq
     networks:
       - spring-net
 
@@ -72,6 +73,16 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
     depends_on:
       - db-notificaciones
+      - rabbitmq
+    networks:
+      - spring-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - spring-net
 
