@@ -99,6 +99,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/productos/**")
                         .hasRole("BODEGA")
 
+
+                // =========================
+                // 🔔 NOTIFICACIONES
+                // =========================
+
+                .requestMatchers("/notificaciones/**")
+                        .hasRole("ADMIN")
+
                 // =========================
                 // 🔒 RESTO
                 // =========================
