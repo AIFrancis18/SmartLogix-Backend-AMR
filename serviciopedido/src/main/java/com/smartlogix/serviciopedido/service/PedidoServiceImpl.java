@@ -80,8 +80,11 @@ public class PedidoServiceImpl implements PedidoService {
         NotificacionDTO notificacion =
                 new NotificacionDTO(
                         pedidoGuardado.getCliente(),
-                        "Pedido creado correctamente. ID: "
-                                + pedidoGuardado.getId(),
+                        "📦 Pedido #" + pedidoGuardado.getId()
+                        + " creado | Producto: " + pedidoGuardado.getProducto()
+                        + " | Cantidad: " + pedidoGuardado.getCantidad()
+                        + " | Dirección: " + pedidoGuardado.getDireccion()
+                        + " | Estado: " + pedidoGuardado.getEstado(),
                         pedidoGuardado.getId()
                 );
 
@@ -122,7 +125,23 @@ public class PedidoServiceImpl implements PedidoService {
 
         pedido.setEstado(estado);
 
-        return repository.save(pedido);
+        Pedido actualizado = repository.save(pedido);
+
+        // 🔔 Crear notificación
+        NotificacionDTO notificacion =
+                new NotificacionDTO(
+                        pedido.getCliente(),
+                        "🔄 Pedido #" + pedido.getId()
+                        + " actualizado | Producto: "
+                        + pedido.getProducto()
+                        + " | Nuevo estado: "
+                        + estado,
+                        pedido.getId()
+                );
+
+        notificacionProducer.enviar(notificacion);
+
+        return actualizado;
     }
 
     @Override
@@ -163,8 +182,23 @@ public class PedidoServiceImpl implements PedidoService {
             System.out.println(e.getMessage());
         }
 
+        // 🔥 ENVIAR NOTIFICACIÓN
+        NotificacionDTO notificacion =
+                new NotificacionDTO(
+                        pedido.getCliente(),
+                        "🗑️ Pedido #" + pedido.getId()
+                        + " eliminado | Producto: "
+                        + pedido.getProducto()
+                        + " | Cantidad: "
+                        + pedido.getCantidad(),
+                        pedido.getId()
+                );
+
+        notificacionProducer.enviar(notificacion);
+
         repository.delete(pedido);
 
         System.out.println("✅ Pedido eliminado");
     }
+
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/notificaciones")
-@CrossOrigin("*")
 public class NotificacionController {
 
     private final NotificacionService service;
