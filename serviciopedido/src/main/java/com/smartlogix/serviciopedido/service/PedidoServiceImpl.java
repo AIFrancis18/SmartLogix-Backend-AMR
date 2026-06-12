@@ -7,6 +7,7 @@ import com.smartlogix.serviciopedido.client.InventarioClient;
 import com.smartlogix.serviciopedido.model.Pedido;
 import com.smartlogix.serviciopedido.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,10 @@ public class PedidoServiceImpl implements PedidoService {
     }
 
     @Override
+    @CircuitBreaker(
+            name = "envioService",
+            fallbackMethod = "fallbackGuardarPedido"
+    )
     public Pedido guardar(Pedido pedido) {
 
         // 🔥 VALIDACIONES
@@ -97,17 +102,9 @@ public class PedidoServiceImpl implements PedidoService {
                 "estado", "PENDIENTE"
         );
 
-        try {
+        envioClient.crearEnvio(envio);
 
-            envioClient.crearEnvio(envio);
-
-            System.out.println("✅ Envío creado automáticamente");
-
-        } catch (Exception e) {
-
-            System.out.println("❌ Error al crear envío");
-            System.out.println(e.getMessage());
-        }
+        System.out.println("✅ Envío creado automáticamente");
 
         return pedidoGuardado;
     }
@@ -199,6 +196,33 @@ public class PedidoServiceImpl implements PedidoService {
         repository.delete(pedido);
 
         System.out.println("✅ Pedido eliminado");
+    }
+
+    private Pedido fallbackGuardarPedido(
+            Pedido pedido,
+            Throwable ex) {
+
+        System.out.println(
+                "⚠️ Circuit Breaker activado: Servicio Envío no disponible"
+        );
+
+        pedido.setEstado("PENDIENTE");
+
+        Pedido pedidoGuardado =
+                repository.save(pedido);
+
+        NotificacionDTO notificacion =
+                new NotificacionDTO(
+                        pedidoGuardado.getCliente(),
+                        "⚠️ Pedido #" + pedidoGuardado.getId()
+                        + " creado SIN envío automático porque el "
+                        + "Servicio de Envíos no está disponible",
+                        pedidoGuardado.getId()
+                );
+
+        notificacionProducer.enviar(notificacion);
+
+        return pedidoGuardado;
     }
 
 }
